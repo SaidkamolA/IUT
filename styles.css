@@ -598,3 +598,234 @@ body {
   background: rgba(59, 130, 246, 0.3);
   color: #f9fafb;
 }
+
+/* Group Selection Modal Styles */
+.group-option {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.group-option:hover::before {
+  left: 100%;
+}
+
+.group-option:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.group-option:active {
+  transform: translateY(0);
+}
+
+.group-option.selected {
+  border-color: var(--primary);
+  background: rgba(59, 130, 246, 0.05);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.group-option.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+/* Welcome Animation */
+@keyframes welcomeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.group-option {
+  animation: welcomeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group-option:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.group-option:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.group-option:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.group-option:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Pulse effect for first visit */
+@keyframes pulseWelcome {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+
+.group-option:first-child {
+  animation: welcomeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1), pulseWelcome 2s infinite;
+  animation-delay: 0.1s, 1s;
+}
+
+/* Common Gaps Styles */
+.common-gap-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.common-gap-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+.common-gap-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.common-gap-card:hover::before {
+  background: linear-gradient(90deg, var(--secondary), var(--accent));
+}
+
+/* Empty state animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.common-gap-card {
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.common-gap-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.common-gap-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.common-gap-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.common-gap-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.common-gap-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+/* Day Sections Styles */
+.day-section {
+  position: relative;
+}
+
+.day-header {
+  position: relative;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+}
+
+.day-header h3 {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.day-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 1px;
+}
+
+/* Day section animations */
+.day-section {
+  animation: slideInFromLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.day-section:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.day-section:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.day-section:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.day-section:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.day-section:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

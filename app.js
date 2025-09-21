@@ -85,110 +85,190 @@ function mergeLessonsWithGaps(lessons, gaps, showGaps = true) {
     
     return result;
 }
-
-const schedule = {
+const scheduleCIE2501 = {
+    "Monday": [
+      { "time": "9:30-10:30", "course": "P1", "teacher": "F.Atamurotov", "room": "A805", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "CAL1", "teacher": "U.Safarov", "room": "B210", "email": "u.safarov@iut.uz" },
+      { "gap": true, "start": "12:30", "end": "15:30", "duration": "3h" },
+      { "time": "15:30-17:00", "course": "PE1", "teacher": "F.Atamurotov", "room": "A502/A504", "email": "" }
+    ],
+    "Tuesday": [
+      { "time": "14:00-15:30", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B102 PC Lab", "email": "sh.suvanov@iut.uz" },
+      { "time": "15:30-17:00", "course": "AE1", "teacher": "U.Baydullaeva", "room": "A705", "email": "u.ubaydullaeva@iut.uz" }
+    ],
+    "Wednesday": [
+      { "time": "9:30-10:30", "course": "AE1", "teacher": "U.Baydullaeva", "room": "A513", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "P1", "teacher": "F.Atamurotov", "room": "A606", "email": "" }
+    ],
+    "Thursday": [
+      { "time": "9:30-10:30", "course": "CAL1", "teacher": "U.Safarov", "room": "A203", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B103 PC Lab", "email": "" },
+      { "gap": true, "start": "12:30", "end": "15:30", "duration": "3h" },
+      { "time": "15:30-17:00", "course": "AER", "teacher": "U.Baydullaeva", "room": "A706", "email": "" }
+    ],
+    "Friday": []
+  };
+  const scheduleCIE2502 = {
+    "Monday": [
+      { "time": "9:30-10:30", "course": "P1", "teacher": "F.Atamurotov", "room": "A805", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "CAL1", "teacher": "U.Safarov", "room": "B210", "email": "u.safarov@iut.uz" },
+      { "gap": true, "start": "12:30", "end": "15:30", "duration": "3h" },
+      { "time": "15:30-17:00", "course": "AER", "teacher": "U.Baydullaeva", "room": "A708", "email": "" }
+    ],
+    "Tuesday": [
+      { "time": "9:30-10:30", "course": "AE1", "teacher": "U.Baydullaeva", "room": "A614", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B102 PC Lab", "email": "sh.suvanov@iut.uz" }
+    ],
+    "Wednesday": [
+      { "time": "9:30-10:30", "course": "AE1", "teacher": "U.Baydullaeva", "room": "A614", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "P1", "teacher": "F.Atamurotov", "room": "A606", "email": "" },
+      { "gap": true, "start": "12:30", "end": "14:00", "duration": "1h 30m" },
+      { "time": "14:00-15:30", "course": "PE1", "teacher": "F.Atamurotov", "room": "A502/A504", "email": "" }
+    ],
+    "Thursday": [
+      { "time": "9:30-10:30", "course": "CAL1", "teacher": "U.Safarov", "room": "A203", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B103 PC Lab", "email": "" }
+    ],
+    "Friday": []
+  };
+  
+const scheduleCIE2503 = {
   "Monday": [
-    {
-      "time": "11:00-12:30",
-      "course": "CAL1",
-      "teacher": "U.Safarov",
-      "room": "B210",
-      "email": "u.safarov@iut.uz"
-    },
-    {
-      "time": "12:30-14:00",
-      "course": "AE1",
-      "teacher": "U.Ubaydullaeva",
-      "room": "A708",
-      "email": "u.ubaydullaeva@iut.uz"
-    },
-    {
-      "gap": true,
-      "start": "14:00",
-      "end": "15:30",
-      "duration": "1h 30m"
-    },
-    {
-      "time": "15:30-17:00",
-      "course": "P1",
-      "teacher": "F.Atamurotov",
-      "room": "A605",
-      "email": "f.atamurotov@iut.uz"
-    }
+    { "time": "11:00-12:30", "course": "CAL1", "teacher": "U.Safarov", "room": "B210", "email": "u.safarov@iut.uz" },
+    { "time": "12:30-14:00", "course": "AE1", "teacher": "U.Ubaydullaeva", "room": "A708", "email": "u.ubaydullaeva@iut.uz" },
+    { "gap": true, "start": "14:00", "end": "15:30", "duration": "1h 30m" },
+    { "time": "15:30-17:00", "course": "P1", "teacher": "F.Atamurotov", "room": "A605", "email": "f.atamurotov@iut.uz" }
   ],
   "Tuesday": [
-    {
-      "time": "9:30-11:00",
-      "course": "OOP1",
-      "teacher": "Sh.Suvanov",
-      "room": "B102 PC Lab",
-      "email": "sh.suvanov@iut.uz"
-    },
-    {
-      "time": "11:00-12:30",
-      "course": "AER",
-      "teacher": "A.Khalilova",
-      "room": "A705",
-      "email": "a.khalilova@iut.uz"
-    }
+    { "time": "9:30-11:00", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B102 PC Lab", "email": "sh.suvanov@iut.uz" },
+    { "time": "11:00-12:30", "course": "AER", "teacher": "A.Khalilova", "room": "A705", "email": "a.khalilova@iut.uz" }
   ],
   "Wednesday": [
-    {
-      "time": "9:30-11:00",
-      "course": "P1",
-      "teacher": "F.Atamurotov",
-      "room": "A607",
-      "email": "f.atamurotov@iut.uz"
-    },
-    {
-      "gap": true,
-      "start": "11:00",
-      "end": "12:30",
-      "duration": "1h 30m"
-    },
-    {
-      "time": "12:30-14:00",
-      "course": "OOP1",
-      "teacher": "Sh.Suvanov",
-      "room": "B102 PC Lab",
-      "email": "sh.suvanov@iut.uz"
-    },
-    {
-      "time": "14:00-15:30",
-      "course": "AE1",
-      "teacher": "U.Ubaydullaeva",
-      "room": "A705",
-      "email": "u.ubaydullaeva@iut.uz"
-    }
+    { "time": "9:30-11:00", "course": "P1", "teacher": "F.Atamurotov", "room": "A607", "email": "f.atamurotov@iut.uz" },
+    { "gap": true, "start": "11:00", "end": "12:30", "duration": "1h 30m" },
+    { "time": "12:30-14:00", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B102 PC Lab", "email": "sh.suvanov@iut.uz" },
+    { "time": "14:00-15:30", "course": "AE1", "teacher": "U.Ubaydullaeva", "room": "A705", "email": "u.ubaydullaeva@iut.uz" }
   ],
   "Thursday": [
-    {
-      "time": "9:30-11:00",
-      "course": "CAL1",
-      "teacher": "U.Safarov",
-      "room": "A203",
-      "email": "u.safarov@iut.uz"
-    },
-    {
-      "gap": true,
-      "start": "11:00",
-      "end": "11:30",
-      "duration": "30m"
-    },
-    {
-      "time": "11:30-13:00",
-      "course": "PE1",
-      "teacher": "F.Atamurotov",
-      "room": "A502/A504",
-      "email": "f.atamurotov@iut.uz"
-    }
+    { "time": "9:30-11:00", "course": "CAL1", "teacher": "U.Safarov", "room": "A203", "email": "u.safarov@iut.uz" },
+    { "gap": true, "start": "11:00", "end": "11:30", "duration": "30m" },
+    { "time": "11:30-13:00", "course": "PE1", "teacher": "F.Atamurotov", "room": "A502/A504", "email": "f.atamurotov@iut.uz" }
   ],
   "Friday": []
 };
 
+const scheduleCIE2504 = {
+  "Monday": [
+    { "time": "9:30-11:00", "course": "CAL1", "teacher": "U.Safarov", "room": "B210", "email": "u.safarov@iut.uz" },
+    { "gap": true, "start": "11:00", "end": "12:30", "duration": "1h 30m" },
+    { "time": "12:30-14:00", "course": "CAL1", "teacher": "U.Safarov", "room": "B210", "email": "u.safarov@iut.uz" },
+    { "gap": true, "start": "14:00", "end": "15:30", "duration": "1h 30m" },
+    { "time": "15:30-17:00", "course": "P1", "teacher": "F.Atamurotov", "room": "A605", "email": "f.atamurotov@iut.uz" }
+  ],
+  "Tuesday": [
+    { "time": "9:30-11:00", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B102 PC Lab", "email": "sh.suvanov@iut.uz" },
+    { "gap": true, "start": "11:00", "end": "12:30", "duration": "1h 30m" },
+    { "time": "12:30-14:00", "course": "AE1", "teacher": "U.Ubaydullaeva", "room": "A706", "email": "u.ubaydullaeva@iut.uz" }
+  ],
+  "Wednesday": [
+    { "time": "9:30-11:00", "course": "P1", "teacher": "F.Atamurotov", "room": "A607", "email": "f.atamurotov@iut.uz" },
+    { "gap": true, "start": "11:00", "end": "12:30", "duration": "1h 30m" },
+    { "time": "12:30-14:00", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B102 PC Lab", "email": "sh.suvanov@iut.uz" }
+  ],
+  "Thursday": [
+    { "time": "11:00-12:30", "course": "AE1", "teacher": "U.Ubaydullaeva", "room": "A705", "email": "u.ubaydullaeva@iut.uz" },
+    { "time": "12:30-14:00", "course": "AER", "teacher": "A.Khalilova", "room": "A706", "email": "a.khalilova@iut.uz" },
+    { "gap": true, "start": "14:00", "end": "16:00", "duration": "2h" },
+    { "time": "16:00-18:00", "course": "PE1", "teacher": "F.Atamurotov", "room": "A502/A504", "email": "f.atamurotov@iut.uz" }
+  ],
+  "Friday": []
+};
+
+const scheduleCIE2505 = {
+    "Monday": [
+      { "time": "9:30-10:30", "course": "CAL1", "teacher": "U.Safarov", "room": "B210", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "CAL1", "teacher": "U.Safarov", "room": "B210", "email": "" },
+      { "gap": true, "start": "12:30", "end": "15:30", "duration": "3h" },
+      { "time": "15:30-17:00", "course": "AE1", "teacher": "A.Khalilova", "room": "A513", "email": "" }
+    ],
+    "Tuesday": [
+      { "time": "9:30-10:30", "course": "P1", "teacher": "F.Atamurotov", "room": "A605", "email": "" }
+    ],
+    "Wednesday": [
+      { "gap": true, "start": "9:30", "end": "11:00", "duration": "1h 30m" },
+      { "time": "11:00-12:30", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B102 PC Lab", "email": "" },
+      { "gap": true, "start": "12:30", "end": "14:00", "duration": "1h 30m" },
+      { "time": "14:00-15:30", "course": "AER", "teacher": "R.Neyaskulova", "room": "A513", "email": "" },
+      { "time": "15:30-17:00", "course": "PE1", "teacher": "F.Atamurotov", "room": "A502/A504", "email": "" }
+    ],
+    "Thursday": [
+      { "time": "9:30-10:30", "course": "P1", "teacher": "F.Atamurotov", "room": "A605", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B103 PC Lab", "email": "" }
+    ],
+    "Friday": [
+      { "time": "9:30-10:30", "course": "AE1", "teacher": "A.Khalilova", "room": "A705", "email": "" }
+    ]
+  };
+  
+
+  const scheduleCIE2506 = {
+    "Monday": [
+      { "time": "9:30-10:30", "course": "CAL1", "teacher": "U.Safarov", "room": "B210", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "AE1", "teacher": "A.Khalilova", "room": "A407", "email": "" },
+      { "gap": true, "start": "12:30", "end": "15:30", "duration": "3h" },
+      { "time": "15:30-17:00", "course": "CAL1", "teacher": "U.Safarov", "room": "B210", "email": "" }
+    ],
+    "Tuesday": [
+      { "time": "9:30-10:30", "course": "P1", "teacher": "F.Atamurotov", "room": "A805", "email": "" }
+    ],
+    "Wednesday": [
+      { "time": "11:00-12:30", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B102 PC Lab", "email": "" }
+    ],
+    "Thursday": [
+      { "time": "9:30-10:30", "course": "P1", "teacher": "F.Atamurotov", "room": "A805", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "AER", "teacher": "R.Neyaskulova", "room": "A607", "email": "" },
+      { "gap": true, "start": "12:30", "end": "14:00", "duration": "1h 30m" },
+      { "time": "14:00-15:30", "course": "OOP1", "teacher": "Sh.Suvanov", "room": "B103 PC Lab", "email": "" }
+    ],
+    "Friday": [
+      { "time": "9:30-10:30", "course": "PE1", "teacher": "F.Sariqulov", "room": "A502/A504", "email": "" },
+      { "gap": true, "start": "10:30", "end": "11:00", "duration": "30m" },
+      { "time": "11:00-12:30", "course": "AE1", "teacher": "A.Khalilova", "room": "A705", "email": "" }
+    ]
+  };
+  
+
+const schedules = {
+    // 'CIE2501': scheduleCIE2501,
+    // 'CIE2502': scheduleCIE2502,
+    'CIE2503': scheduleCIE2503,
+    'CIE2504': scheduleCIE2504,
+    // 'CIE2505': scheduleCIE2505,
+    // 'CIE2506': scheduleCIE2506
+};
+
 class ScheduleApp {
     constructor() {
-        this.scheduleData = schedule;
+        this.selectedGroup = localStorage.getItem('selectedGroup');
+        this.isFirstVisit = !this.selectedGroup;
+        
+        if (this.isFirstVisit) {
+            this.showGroupSelectionModal();
+            return;
+        }
+        
+        this.scheduleData = schedules[this.selectedGroup] || schedules['CIE2501'];
         this.filteredData = { ...this.scheduleData };
         this.currentDay = 'Monday';
         this.notifications = [];
@@ -211,6 +291,7 @@ class ScheduleApp {
         this.setupEventListeners();
         this.setupTheme();
         this.setupNotifications();
+        this.updateCurrentGroupDisplay();
         this.renderSchedule();
         
         setTimeout(() => {
@@ -225,6 +306,291 @@ class ScheduleApp {
         }, 60000);
         
         this.showWelcomeTips();
+    }
+
+    changeGroup(groupId) {
+        if (schedules[groupId]) {
+            this.selectedGroup = groupId;
+            localStorage.setItem('selectedGroup', groupId);
+            this.scheduleData = schedules[groupId];
+            this.filteredData = { ...this.scheduleData };
+            this.updateFilters();
+            this.renderSchedule();
+            this.updateCurrentGroupDisplay();
+            this.showQuickNotification('Группа изменена', `Выбрана группа ${groupId}`);
+        }
+    }
+
+    updateCurrentGroupDisplay() {
+        const currentGroupElement = document.getElementById('currentGroup');
+        if (currentGroupElement) {
+            currentGroupElement.textContent = `Группа: ${this.selectedGroup}`;
+        }
+    }
+
+    showGroupSelectionModal() {
+        const modal = document.getElementById('groupSelectionModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            const groupOptions = modal.querySelectorAll('.group-option');
+            groupOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const groupId = option.getAttribute('data-group');
+                    this.selectGroup(groupId);
+                });
+            });
+        }
+    }
+
+    selectGroup(groupId) {
+        this.selectedGroup = groupId;
+        localStorage.setItem('selectedGroup', groupId);
+        
+        this.scheduleData = schedules[groupId];
+        this.filteredData = { ...this.scheduleData };
+        this.currentDay = 'Monday';
+        this.notifications = [];
+        this.isDarkMode = localStorage.getItem('darkMode') === 'true';
+        this.notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+        this.reminderTime = parseInt(localStorage.getItem('reminderTime')) || 15;
+        this.showGaps = localStorage.getItem('showGaps') !== 'false';
+        this.minGapMinutes = parseInt(localStorage.getItem('minGapMinutes')) || 10;
+        this.includeGapsInCalendar = localStorage.getItem('includeGapsInCalendar') === 'true';
+        this.compactMode = localStorage.getItem('compactMode') === 'true';
+        this.currentLesson = null;
+        
+        this.hideGroupSelectionModal();
+        this.init();
+    }
+
+    hideGroupSelectionModal() {
+        const modal = document.getElementById('groupSelectionModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+
+    showCommonGaps() {
+        const modal = document.getElementById('commonGapsModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            const content = document.getElementById('commonGapsContent');
+            content.innerHTML = '';
+            
+            const commonGaps = this.findCommonGaps();
+            
+            if (commonGaps.length === 0) {
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Общих окон не найдено</h3>
+                        <p class="text-gray-600 dark:text-gray-400">У групп нет совпадающих окон в расписании</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const dayNames = {
+                'Monday': 'Понедельник',
+                'Tuesday': 'Вторник',
+                'Wednesday': 'Среда',
+                'Thursday': 'Четверг',
+                'Friday': 'Пятница'
+            };
+            
+            // Группируем общие окна по дням недели
+            const gapsByDay = {};
+            commonGaps.forEach(gap => {
+                if (!gapsByDay[gap.day]) {
+                    gapsByDay[gap.day] = [];
+                }
+                gapsByDay[gap.day].push(gap);
+            });
+
+            // Создаем секции для каждого дня
+            Object.keys(gapsByDay).forEach(day => {
+                const daySection = document.createElement('div');
+                daySection.className = 'day-section mb-6';
+                
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header mb-3';
+                dayHeader.innerHTML = `
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                        ${dayNames[day]}
+                    </h3>
+                `;
+                
+                daySection.appendChild(dayHeader);
+                
+                const gapsContainer = document.createElement('div');
+                gapsContainer.className = 'space-y-3';
+                
+                gapsByDay[day].forEach(commonGap => {
+                    const gapCard = document.createElement('div');
+                    gapCard.className = 'common-gap-card p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700 rounded-lg';
+                    
+                    gapCard.innerHTML = `
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm text-blue-600 dark:text-blue-400 font-medium">${commonGap.start} – ${commonGap.end}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">${commonGap.duration}</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">${commonGap.groups.join(', ')}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    gapsContainer.appendChild(gapCard);
+                });
+                
+                daySection.appendChild(gapsContainer);
+                content.appendChild(daySection);
+            });
+        }
+    }
+
+    hideCommonGapsModal() {
+        const modal = document.getElementById('commonGapsModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+
+    findCommonGaps() {
+        const commonGaps = [];
+        const currentGroupGaps = this.getGapsForGroup(this.selectedGroup);
+        
+        Object.keys(schedules).forEach(groupId => {
+            if (groupId === this.selectedGroup) return;
+            
+            const otherGroupGaps = this.getGapsForGroup(groupId);
+            
+            currentGroupGaps.forEach(currentGap => {
+                otherGroupGaps.forEach(otherGap => {
+                    if (this.gapsOverlap(currentGap, otherGap)) {
+                        const commonGap = {
+                            day: currentGap.day,
+                            start: this.getLaterTime(currentGap.start, otherGap.start),
+                            end: this.getEarlierTime(currentGap.end, otherGap.end),
+                            duration: this.calculateDuration(
+                                this.getLaterTime(currentGap.start, otherGap.start),
+                                this.getEarlierTime(currentGap.end, otherGap.end)
+                            ),
+                            groups: [this.selectedGroup, groupId]
+                        };
+                        
+                        if (this.calculateMinutes(commonGap.duration) >= 10) {
+                            const existingGap = commonGaps.find(gap => 
+                                gap.day === commonGap.day && 
+                                gap.start === commonGap.start && 
+                                gap.end === commonGap.end
+                            );
+                            
+                            if (existingGap) {
+                                if (!existingGap.groups.includes(groupId)) {
+                                    existingGap.groups.push(groupId);
+                                }
+                            } else {
+                                commonGaps.push(commonGap);
+                            }
+                        }
+                    }
+                });
+            });
+        });
+        
+        return commonGaps.sort((a, b) => {
+            const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            return dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day) || a.start.localeCompare(b.start);
+        });
+    }
+
+    getGapsForGroup(groupId) {
+        const gaps = [];
+        const schedule = schedules[groupId];
+        
+        Object.keys(schedule).forEach(day => {
+            schedule[day].forEach(item => {
+                if (item.gap) {
+                    gaps.push({
+                        day: day,
+                        start: item.start,
+                        end: item.end,
+                        duration: item.duration
+                    });
+                }
+            });
+        });
+        
+        return gaps;
+    }
+
+    gapsOverlap(gap1, gap2) {
+        if (gap1.day !== gap2.day) return false;
+        
+        const gap1Start = this.timeToMinutes(gap1.start);
+        const gap1End = this.timeToMinutes(gap1.end);
+        const gap2Start = this.timeToMinutes(gap2.start);
+        const gap2End = this.timeToMinutes(gap2.end);
+        
+        return gap1Start < gap2End && gap2Start < gap1End;
+    }
+
+    timeToMinutes(time) {
+        const [hours, minutes] = time.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    minutesToTime(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+    }
+
+    getLaterTime(time1, time2) {
+        return this.timeToMinutes(time1) > this.timeToMinutes(time2) ? time1 : time2;
+    }
+
+    getEarlierTime(time1, time2) {
+        return this.timeToMinutes(time1) < this.timeToMinutes(time2) ? time1 : time2;
+    }
+
+    calculateDuration(start, end) {
+        const startMinutes = this.timeToMinutes(start);
+        const endMinutes = this.timeToMinutes(end);
+        const durationMinutes = endMinutes - startMinutes;
+        
+        const hours = Math.floor(durationMinutes / 60);
+        const minutes = durationMinutes % 60;
+        
+        if (hours > 0 && minutes > 0) {
+            return `${hours}ч ${minutes}м`;
+        } else if (hours > 0) {
+            return `${hours}ч`;
+        } else {
+            return `${minutes}м`;
+        }
+    }
+
+    calculateMinutes(duration) {
+        const match = duration.match(/(\d+)ч\s*(\d+)?м?/);
+        if (match) {
+            const hours = parseInt(match[1]) || 0;
+            const minutes = parseInt(match[2]) || 0;
+            return hours * 60 + minutes;
+        }
+        return 0;
     }
 
     setupTelegramWebApp() {
@@ -250,7 +616,9 @@ class ScheduleApp {
             courseFilter: document.getElementById('courseFilter'),
             teacherFilter: document.getElementById('teacherFilter'),
             roomFilter: document.getElementById('roomFilter'),
-            todayFilter: document.getElementById('todayFilter')
+            todayFilter: document.getElementById('todayFilter'),
+            groupSelect: document.getElementById('groupSelect'),
+            commonGapsBtn: document.getElementById('commonGapsBtn')
         };
         
         Object.entries(elements).forEach(([name, element]) => {
@@ -284,6 +652,12 @@ class ScheduleApp {
         }
         if (elements.todayFilter) {
             elements.todayFilter.addEventListener('click', () => this.handleTodayFilter());
+        }
+        if (elements.groupSelect) {
+            elements.groupSelect.addEventListener('change', (e) => this.changeGroup(e.target.value));
+        }
+        if (elements.commonGapsBtn) {
+            elements.commonGapsBtn.addEventListener('click', () => this.showCommonGaps());
         }
         
         const dayButtons = document.querySelectorAll('.day-btn');
@@ -361,12 +735,18 @@ class ScheduleApp {
         if (exportElements.fileInput) {
             exportElements.fileInput.addEventListener('change', (e) => this.handleFileImport(e));
         }
+        
+        const closeCommonGapsModal = document.getElementById('closeCommonGapsModal');
+        if (closeCommonGapsModal) {
+            closeCommonGapsModal.addEventListener('click', () => this.hideCommonGapsModal());
+        }
 
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeModal();
                 this.closeSettings();
+                this.hideCommonGapsModal();
             }
         });
     }
@@ -1090,6 +1470,7 @@ END:VCALENDAR`;
         
         document.getElementById('reminderTime').value = this.reminderTime;
         document.getElementById('minGapMinutes').value = this.minGapMinutes;
+        document.getElementById('groupSelect').value = this.selectedGroup;
         
         const thumb = document.getElementById('notificationThumb');
         const toggle = document.getElementById('notificationToggle');
