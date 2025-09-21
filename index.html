@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание INHA UNIVERSITY</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6',
+                        accent: '#06b6d4',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .course-colors {
+            --cal1: #3b82f6;
+            --ae1: #8b5cf6;
+            --p1: #06b6d4;
+            --oop1: #10b981;
+            --aer: #f59e0b;
+            --pe1: #ef4444;
+        }
+        
+        .course-cal1 { background-color: var(--cal1); }
+        .course-ae1 { background-color: var(--ae1); }
+        .course-p1 { background-color: var(--p1); }
+        .course-oop1 { background-color: var(--oop1); }
+        .course-aer { background-color: var(--aer); }
+        .course-pe1 { background-color: var(--pe1); }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .dark {
+            color-scheme: dark;
+        }
+        
+        .dark .bg-white {
+            background-color: #1f2937;
+        }
+        
+        .dark .text-gray-900 {
+            color: #f9fafb;
+        }
+        
+        .dark .text-gray-700 {
+            color: #d1d5db;
+        }
+        
+        .dark .text-gray-600 {
+            color: #9ca3af;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #374151;
+        }
+        
+        .dark .bg-gray-50 {
+            background-color: #374151;
+        }
+        
+        .dark .bg-gray-100 {
+            background-color: #4b5563;
+        }
+        
+        .dark .bg-yellow-50 {
+            background-color: #451a03;
+        }
+        
+        .dark .text-yellow-800 {
+            color: #fbbf24;
+        }
+        
+        .dark .text-yellow-700 {
+            color: #f59e0b;
+        }
+        
+        .dark .border-yellow-200 {
+            border-color: #92400e;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div id="app" class="min-h-screen">
+        <header class="header sticky top-0 z-40">
+            <div class="px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <button id="backBtn" class="hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Назад">
+                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <h1 class="text-xl font-bold">Расписание INHA UNIVERSITY</h1>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Переключить тему">
+                            <svg id="sunIcon" class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <svg id="moonIcon" class="w-5 h-5 text-gray-600 dark:text-gray-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </button>
+                        <button id="settingsBtn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Настройки">
+                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="pb-20">
+            <div id="searchSection" class="p-4">
+                <div class="relative mb-4">
+                    <input type="text" id="searchInput" placeholder="Поиск по предмету, преподавателю, кабинету..." 
+                           class="search-input w-full px-4 py-3 pl-10 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                           aria-label="Поиск по расписанию">
+                    <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <select id="courseFilter" class="filter-select px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent" aria-label="Фильтр по предмету">
+                        <option value="">Все предметы</option>
+                    </select>
+                    <select id="teacherFilter" class="filter-select px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent" aria-label="Фильтр по преподавателю">
+                        <option value="">Все преподаватели</option>
+                    </select>
+                    <select id="roomFilter" class="filter-select px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent" aria-label="Фильтр по кабинету">
+                        <option value="">Все кабинеты</option>
+                    </select>
+                    <button id="todayFilter" class="filter-btn px-3 py-2 rounded-lg text-sm transition-colors">
+                        Только сегодня
+                    </button>
+                </div>
+            </div>
+
+            <div id="scheduleContainer" class="px-4">
+                <div id="weekView" class="space-y-3">
+                    <div class="grid grid-cols-5 gap-2 mb-4">
+                        <button id="dayBtnMonday" class="day-btn active px-3 py-2 text-sm font-medium rounded-lg text-white" data-day="Monday" aria-label="Понедельник">ПН</button>
+                        <button id="dayBtnTuesday" class="day-btn px-3 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300" data-day="Tuesday" aria-label="Вторник">ВТ</button>
+                        <button id="dayBtnWednesday" class="day-btn px-3 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300" data-day="Wednesday" aria-label="Среда">СР</button>
+                        <button id="dayBtnThursday" class="day-btn px-3 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300" data-day="Thursday" aria-label="Четверг">ЧТ</button>
+                        <button id="dayBtnFriday" class="day-btn px-3 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300" data-day="Friday" aria-label="Пятница">ПТ</button>
+                    </div>
+                    
+                    <div id="scheduleContent" class="space-y-3">
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="lessonModal" class="modal fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+            <div class="modal-content max-w-md w-full max-h-[90vh] overflow-y-auto slide-in">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 id="modalTitle" class="text-lg font-semibold text-gray-900 dark:text-white"></h3>
+                        <button id="closeModal" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Закрыть">
+                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div id="modalContent" class="space-y-4">
+                    </div>
+                    
+                    <div class="flex flex-col space-y-2 mt-6">
+                        <button id="addToCalendar" class="btn-primary w-full px-4 py-3 text-white rounded-lg flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>Добавить в календарь</span>
+                        </button>
+                        <button id="contactTeacher" class="btn-secondary w-full px-4 py-3 text-white rounded-lg flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>Связаться с преподавателем</span>
+                        </button>
+                        <button id="showOnMap" class="btn-accent w-full px-4 py-3 text-white rounded-lg flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span>Показать на карте</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settingsModal" class="modal fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+            <div class="modal-content max-w-md w-full slide-in">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Настройки</h3>
+                        <button id="closeSettings" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Закрыть настройки">
+                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Время напоминания (минуты до пары)</label>
+                            <input type="number" id="reminderTime" min="5" max="60" value="15" 
+                                   class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   aria-label="Время напоминания в минутах">
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Уведомления</span>
+                            <button id="notificationToggle" class="toggle" aria-label="Переключить уведомления">
+                                <span id="notificationThumb" class="toggle-thumb"></span>
+                            </button>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Настройки окон</h4>
+                            
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Показывать окна</span>
+                                    <button id="gapsToggle" class="toggle" aria-label="Переключить показ окон">
+                                        <span id="gapsThumb" class="toggle-thumb"></span>
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm text-gray-700 dark:text-gray-300 mb-1">Минимальная длительность окна (мин)</label>
+                                    <input type="number" id="minGapMinutes" min="0" max="180" value="10" 
+                                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                                           aria-label="Минимальная длительность окна">
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Добавлять окна в календарь</span>
+                                    <button id="calendarToggle" class="toggle" aria-label="Переключить добавление окон в календарь">
+                                        <span id="calendarThumb" class="toggle-thumb"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Отображение</h4>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700 dark:text-gray-300">Компактный режим</span>
+                                <button id="compactToggle" class="toggle" aria-label="Переключить компактный режим">
+                                    <span id="compactThumb" class="toggle-thumb"></span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col space-y-2">
+                            <button id="exportSchedule" class="btn-primary w-full px-4 py-3 text-white rounded-lg">
+                                Экспорт расписания
+                            </button>
+                            <button id="importSchedule" class="btn-secondary w-full px-4 py-3 text-white rounded-lg">
+                                Импорт расписания
+                            </button>
+                            <input type="file" id="fileInput" accept=".json" class="hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
