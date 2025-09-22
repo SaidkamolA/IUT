@@ -1,6 +1,26 @@
 
 function parseTime(timeStr) {
+    if (!timeStr || typeof timeStr !== 'string') {
+        console.error('parseTime получил неверный параметр:', timeStr);
+        return {
+            startMinutes: 0,
+            endMinutes: 0,
+            start: '00:00',
+            end: '00:00'
+        };
+    }
+    
     const [start, end] = timeStr.split('-');
+    if (!start || !end) {
+        console.error('parseTime не может разобрать время:', timeStr);
+        return {
+            startMinutes: 0,
+            endMinutes: 0,
+            start: '00:00',
+            end: '00:00'
+        };
+    }
+    
     const [startHour, startMin] = start.split(':').map(Number);
     const [endHour, endMin] = end.split(':').map(Number);
     
@@ -292,6 +312,7 @@ class ScheduleApp {
         this.setupTheme();
         this.setupNotifications();
         this.updateCurrentGroupDisplay();
+        this.highlightCurrentDay(); // Автоматически переключаем на текущий день
         this.renderSchedule();
         
         setTimeout(() => {
@@ -840,7 +861,10 @@ class ScheduleApp {
         const currentDay = this.getDayName(today.getDay());
         const todayLessons = this.scheduleData[currentDay] || [];
 
-        todayLessons.forEach(lesson => {
+        // Фильтруем только уроки (не окна)
+        const actualLessons = todayLessons.filter(lesson => !lesson.gap && lesson.time);
+        
+        actualLessons.forEach(lesson => {
             const [startTime] = lesson.time.split('-');
             const [hours, minutes] = startTime.split(':').map(Number);
             
@@ -890,10 +914,6 @@ class ScheduleApp {
     }
 
     renderSchedule() {
-        console.log('renderSchedule вызвана');
-        console.log('currentDay:', this.currentDay);
-        console.log('filteredData:', this.filteredData);
-        
         const container = document.getElementById('scheduleContent');
         if (!container) {
             console.error('Элемент scheduleContent не найден');
@@ -903,8 +923,6 @@ class ScheduleApp {
 
         const selectedDay = this.currentDay || 'Monday';
         const lessons = this.filteredData[selectedDay] || [];
-        console.log('Выбранный день:', selectedDay);
-        console.log('Уроки для дня:', lessons);
         
         const dayNames = {
             'Monday': 'Понедельник',
@@ -915,8 +933,6 @@ class ScheduleApp {
         };
         const dayCard = this.createDayCard(dayNames[selectedDay], lessons, selectedDay);
         container.appendChild(dayCard);
-
-        this.highlightCurrentDay();
     }
 
     createDayCard(dayName, lessons, dayKey) {
@@ -1017,7 +1033,10 @@ class ScheduleApp {
         const now = new Date();
         const currentTime = now.getHours() * 60 + now.getMinutes();
         
-        const sortedLessons = [...lessons].sort((a, b) => {
+        // Фильтруем только уроки (не окна)
+        const actualLessons = lessons.filter(lesson => !lesson.gap && lesson.time);
+        
+        const sortedLessons = [...actualLessons].sort((a, b) => {
             const aTime = parseTime(a.time);
             const bTime = parseTime(b.time);
             return aTime.startMinutes - bTime.startMinutes;
@@ -1152,6 +1171,9 @@ class ScheduleApp {
     }
 
     isCurrentLesson(lesson) {
+        // Проверяем, что это урок (не окно) и есть время
+        if (lesson.gap || !lesson.time) return false;
+        
         const now = new Date();
         const currentTime = now.getHours() * 60 + now.getMinutes();
         const currentDay = this.getDayName(now.getDay());
@@ -1179,7 +1201,17 @@ class ScheduleApp {
         const currentDay = this.getDayName(today.getDay());
         const dayBtn = document.querySelector(`[data-day="${currentDay}"]`);
         
-        if (dayBtn && !dayBtn.classList.contains('bg-primary')) {
+        if (dayBtn) {
+            // Переключаем на текущий день
+            this.currentDay = currentDay;
+            
+            // Обновляем стили кнопок
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+            });
+            
+            // Подсвечиваем текущий день
             dayBtn.classList.add('bg-primary', 'text-white');
             dayBtn.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
         }
@@ -1463,67 +1495,7 @@ END:VCALENDAR`;
         });
     }
 
-    openSettings() {
-        const modal = document.getElementById('settingsModal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        document.getElementById('reminderTime').value = this.reminderTime;
-        document.getElementById('minGapMinutes').value = this.minGapMinutes;
-        document.getElementById('groupSelect').value = this.selectedGroup;
-        
-        const thumb = document.getElementById('notificationThumb');
-        const toggle = document.getElementById('notificationToggle');
-        
-        if (this.notificationsEnabled) {
-            thumb.classList.add('translate-x-6');
-            toggle.classList.add('bg-primary');
-            toggle.classList.remove('bg-gray-200', 'dark:bg-gray-600');
-        } else {
-            thumb.classList.remove('translate-x-6');
-            toggle.classList.remove('bg-primary');
-            toggle.classList.add('bg-gray-200', 'dark:bg-gray-600');
-        }
-        
-        const gapsThumb = document.getElementById('gapsThumb');
-        const gapsToggle = document.getElementById('gapsToggle');
-        
-        if (this.showGaps) {
-            gapsThumb.classList.add('translate-x-6');
-            gapsToggle.classList.add('bg-primary');
-            gapsToggle.classList.remove('bg-gray-200', 'dark:bg-gray-600');
-        } else {
-            gapsThumb.classList.remove('translate-x-6');
-            gapsToggle.classList.remove('bg-primary');
-            gapsToggle.classList.add('bg-gray-200', 'dark:bg-gray-600');
-        }
-        
-        const calendarThumb = document.getElementById('calendarThumb');
-        const calendarToggle = document.getElementById('calendarToggle');
-        
-        if (this.includeGapsInCalendar) {
-            calendarThumb.classList.add('translate-x-6');
-            calendarToggle.classList.add('bg-primary');
-            calendarToggle.classList.remove('bg-gray-200', 'dark:bg-gray-600');
-        } else {
-            calendarThumb.classList.remove('translate-x-6');
-            calendarToggle.classList.remove('bg-primary');
-            calendarToggle.classList.add('bg-gray-200', 'dark:bg-gray-600');
-        }
-        
-        const compactThumb = document.getElementById('compactThumb');
-        const compactToggle = document.getElementById('compactToggle');
-        
-        if (this.compactMode) {
-            compactThumb.classList.add('translate-x-6');
-            compactToggle.classList.add('bg-primary');
-            compactToggle.classList.remove('bg-gray-200', 'dark:bg-gray-600');
-        } else {
-            compactThumb.classList.remove('translate-x-6');
-            compactToggle.classList.remove('bg-primary');
-            compactToggle.classList.add('bg-gray-200', 'dark:bg-gray-600');
-        }
-    }
+   
 
     closeSettings() {
         const modal = document.getElementById('settingsModal');
@@ -1568,63 +1540,48 @@ END:VCALENDAR`;
         }
     }
 
-    openInTelegram() {
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.openTelegramLink('https://t.me/your_bot_username');
-        } else {
-            window.open('https://t.me/your_bot_username', '_blank');
+    showWelcomeTips() {
+        // Показываем подсказки для новых пользователей
+        if (localStorage.getItem('welcomeTipsShown') !== 'true') {
+            setTimeout(() => {
+                this.showQuickNotification('Добро пожаловать!', 'Используйте фильтры для поиска нужных пар');
+                localStorage.setItem('welcomeTipsShown', 'true');
+            }, 1000);
         }
     }
 
+    openSettings() {
+        const modal = document.getElementById('settingsModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    }
 
     showQuickNotification(title, message) {
+        // Создаем простое уведомление
         const notification = document.createElement('div');
-        notification.className = 'notification fixed top-20 left-4 right-4 p-4 rounded-lg z-50 slide-in';
+        notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 fade-in';
         notification.innerHTML = `
-            <div class="flex items-center justify-between">
-                <div>
-                    <h4 class="font-semibold">${title}</h4>
-                    <p class="text-sm opacity-90">${message}</p>
-                </div>
-                <button class="text-white hover:text-gray-200" onclick="this.parentElement.parentElement.remove()">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
+            <div class="font-semibold">${title}</div>
+            <div class="text-sm opacity-90">${message}</div>
         `;
         
         document.body.appendChild(notification);
         
+        // Убираем уведомление через 3 секунды
         setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 5000);
+            notification.remove();
+        }, 3000);
     }
 
 
 
-    showWelcomeTips() {
-        const hasSeenTips = localStorage.getItem('hasSeenTips');
-        if (hasSeenTips) return;
-        
-        setTimeout(() => {
-            this.showQuickNotification(
-                'Добро пожаловать! 🎓',
-                'Используйте кнопки дней недели для навигации'
-            );
-            
-            setTimeout(() => {
-                this.showQuickNotification(
-                    'Совет 💡',
-                    'Кликните на карточку занятия для подробной информации'
-                );
-            }, 3000);
-            
-            localStorage.setItem('hasSeenTips', 'true');
-        }, 1000);
-    }
+
+
+
+
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
