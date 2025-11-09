@@ -1,6 +1,26 @@
 
 function parseTime(timeStr) {
+    if (!timeStr || typeof timeStr !== 'string') {
+        console.error('parseTime получил неверный параметр:', timeStr);
+        return {
+            startMinutes: 0,
+            endMinutes: 0,
+            start: '00:00',
+            end: '00:00'
+        };
+    }
+    
     const [start, end] = timeStr.split('-');
+    if (!start || !end) {
+        console.error('parseTime не может разобрать время:', timeStr);
+        return {
+            startMinutes: 0,
+            endMinutes: 0,
+            start: '00:00',
+            end: '00:00'
+        };
+    }
+    
     const [startHour, startMin] = start.split(':').map(Number);
     const [endHour, endMin] = end.split(':').map(Number);
     
@@ -258,10 +278,71 @@ const schedules = {
     // 'CIE2506': scheduleCIE2506
 };
 
+// Словарь терминов AER (Academic English Reading)
+const homeworkDictionary = {
+    "AER": {
+        "Ties": "Связи — отношения или связи с человеком или местом",
+        "Nurture": "Воспитывать — помогать кому-то или чему-то развиваться",
+        "Acquaintance": "Знакомый — человек, которого вы знаете немного, который не является близким другом",
+        "Hyper-connected": "Гиперсвязанный — всегда связанный с людьми через технологии",
+        "Narcissists": "Нарциссы — люди, которые слишком много восхищаются собой",
+        "Adolescents": "Подростки — дети, которые превращаются в молодых взрослых",
+        "Anti-social": "Асоциальный — проявляющий недостаток заботы о других или обществе в целом",
+        "Empathy": "Эмпатия — способность понимать или представлять, как кто-то чувствует",
+        "Emissions": "Выбросы — газы, выбрасываемые в воздух",
+        "Renewable": "Возобновляемый — то, что может быть заменено естественным образом и использовано снова",
+        "Initiative": "Инициатива — новое действие или план для решения проблемы",
+        "Biomass": "Биомасса — материалы из растений или животных, которые можно использовать в качестве топлива",
+        "Manure": "Навоз — отходы животных, используемые для удобрения почвы",
+        "Subsidies": "Субсидии — поддержка (часто денежная), предоставляемая правительством для снижения затрат",
+        "Incineration": "Сжигание — акт сжигания отходов",
+        "Municipal": "Муниципальный — относящийся к городскому или местному правительству",
+        "Efficient": "Эффективный — работающий хорошо и без потери энергии",
+        "Pellets": "Пеллеты — маленькие спрессованные кусочки биомассы (обычно дерева), используемые в качестве топлива",
+        "Anaerobic": "Анаэробный — без воздуха или кислорода, используется когда бактерии разлагают отходы для производства биогаза",
+        "Digester": "Метатенк — герметичный резервуар, где органические отходы разлагаются для производства биогаза",
+        "Genetic": "Генетический — относящийся к генам, ДНК и наследственности; черты или состояния, передаваемые от родителей к детям",
+        "Notion": "Понятие — идея, убеждение или мнение о чем-то",
+        "Tendencies": "Склонности — обычные способы поведения; модели в том, как кто-то часто действует или чувствует",
+        "Delinquent": "Правонарушитель — молодой человек, который регулярно нарушает закон или правила",
+        "Prominent": "Выдающийся — очень заметный, важный или хорошо известный",
+        "Propensity": "Склонность — естественная тенденция или склонность действовать определенным образом",
+        "Deviant": "Девиантный — ведущий себя способом, очень отличающимся от того, что считается нормальным или приемлемым",
+        "Inherit": "Наследовать — получать черты, качества или собственность от родителей (либо биологически, либо юридически)"
+    },
+    "AE": {
+        "Innovation": "Инновация — внедрение новых идей, методов или технологий",
+        "Role": "Роль — функция или позиция, которую кто-то выполняет в определенной ситуации",
+        "Take on": "Брать на себя — принимать ответственность за что-то или соглашаться выполнять задачу",
+        "Motivation": "Мотивация — причина или причины для действия; желание что-то сделать",
+        "Promote": "Продвигать — способствовать развитию или успеху чего-то; поддерживать или рекламировать",
+        "Realistic": "Реалистичный — практичный и основанный на реальности, а не на идеальных представлениях",
+        "Initiative": "Инициатива — способность принимать решения и действовать самостоятельно; новое действие или план",
+        "Clarity": "Ясность — качество быть ясным, понятным и легко воспринимаемым",
+        "Versus": "Против — используется для сравнения двух вещей или идей, которые противопоставляются друг другу",
+        "Enthusiasm": "Энтузиазм — сильный интерес или волнение по поводу чего-то; страсть и энтузиазм",
+        "Responsibility": "Ответственность — обязательство выполнить задачу или заботиться о чем-то; состояние быть ответственным",
+        "Affordable": "Доступный — приемлемый по цене; такой, который можно себе позволить",
+        "Alternative": "Альтернатива — другой вариант или выбор из двух или более возможностей",
+        "Force": "Сила — физическая мощь или энергия; принуждение или давление",
+        "Function": "Функционировать — работать или действовать определенным образом; выполнять свою функцию",
+        "Gear": "Оборудование — механическое устройство или инструменты, необходимые для определенной деятельности",
+        "Hazardous": "Опасный — представляющий риск или опасность; небезопасный",
+        "Intention": "Намерение — цель или план действий; то, что кто-то намеревается сделать",
+        "Inventor": "Изобретатель — человек, который создает или разрабатывает новые устройства, методы или процессы",
+        "Power": "Питать — снабжать энергией или приводить в действие; обеспечивать работу",
+        "Stream": "Течь — двигаться непрерывным потоком; передавать данные в потоковом режиме",
+        "Summarize": "Суммировать — кратко изложить основные моменты; сделать резюме",
+        "Throughout": "На протяжении — в течение всего времени или по всей площади; повсюду"
+    }
+};
+
 class ScheduleApp {
     constructor() {
         this.selectedGroup = localStorage.getItem('selectedGroup');
         this.isFirstVisit = !this.selectedGroup;
+        this.locale = localStorage.getItem('locale') || 'ru';
+        this.holidays = JSON.parse(localStorage.getItem('holidays') || '[]');
         
         if (this.isFirstVisit) {
             this.showGroupSelectionModal();
@@ -280,6 +361,7 @@ class ScheduleApp {
         this.includeGapsInCalendar = localStorage.getItem('includeGapsInCalendar') === 'true';
         this.compactMode = localStorage.getItem('compactMode') === 'true';
         this.currentLesson = null;
+        this.selectedCategory = localStorage.getItem('selectedDictionaryCategory') || 'AER'; // Выбранная категория словаря
         
         this.init();
     }
@@ -291,7 +373,9 @@ class ScheduleApp {
         this.setupEventListeners();
         this.setupTheme();
         this.setupNotifications();
+        this.hideSplashSoon();
         this.updateCurrentGroupDisplay();
+        this.highlightCurrentDay(); // Автоматически переключаем на текущий день
         this.renderSchedule();
         
         setTimeout(() => {
@@ -306,6 +390,20 @@ class ScheduleApp {
         }, 60000);
         
         this.showWelcomeTips();
+    }
+
+    hideSplashSoon() {
+        const splash = document.getElementById('splash');
+        if (!splash) return;
+        // Немного задержки для ощущения плавности
+        setTimeout(() => {
+            splash.classList.add('fade-in');
+            splash.style.opacity = '0';
+            splash.style.transition = 'opacity 300ms ease';
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 320);
+        }, 500);
     }
 
     changeGroup(groupId) {
@@ -618,7 +716,8 @@ class ScheduleApp {
             roomFilter: document.getElementById('roomFilter'),
             todayFilter: document.getElementById('todayFilter'),
             groupSelect: document.getElementById('groupSelect'),
-            commonGapsBtn: document.getElementById('commonGapsBtn')
+            commonGapsBtn: document.getElementById('commonGapsBtn'),
+            homeworkDictBtn: document.getElementById('homeworkDictBtn')
         };
         
         Object.entries(elements).forEach(([name, element]) => {
@@ -658,6 +757,9 @@ class ScheduleApp {
         }
         if (elements.commonGapsBtn) {
             elements.commonGapsBtn.addEventListener('click', () => this.showCommonGaps());
+        }
+        if (elements.homeworkDictBtn) {
+            elements.homeworkDictBtn.addEventListener('click', () => this.showHomeworkDict());
         }
         
         const dayButtons = document.querySelectorAll('.day-btn');
@@ -699,7 +801,10 @@ class ScheduleApp {
             minGapMinutes: document.getElementById('minGapMinutes'),
             gapsToggle: document.getElementById('gapsToggle'),
             calendarToggle: document.getElementById('calendarToggle'),
-            compactToggle: document.getElementById('compactToggle')
+            compactToggle: document.getElementById('compactToggle'),
+            localeSelect: document.getElementById('localeSelect'),
+            holidayDate: document.getElementById('holidayDate'),
+            addHolidayBtn: document.getElementById('addHolidayBtn')
         };
         
         if (settingsElements.notificationToggle) {
@@ -719,6 +824,13 @@ class ScheduleApp {
         }
         if (settingsElements.compactToggle) {
             settingsElements.compactToggle.addEventListener('click', () => this.toggleCompactMode());
+        }
+        if (settingsElements.localeSelect) {
+            settingsElements.localeSelect.value = this.locale;
+            settingsElements.localeSelect.addEventListener('change', (e) => this.changeLocale(e.target.value));
+        }
+        if (settingsElements.addHolidayBtn && settingsElements.holidayDate) {
+            settingsElements.addHolidayBtn.addEventListener('click', () => this.addHoliday(settingsElements.holidayDate.value));
         }
         const exportElements = {
             exportSchedule: document.getElementById('exportSchedule'),
@@ -740,6 +852,37 @@ class ScheduleApp {
         if (closeCommonGapsModal) {
             closeCommonGapsModal.addEventListener('click', () => this.hideCommonGapsModal());
         }
+        
+        const closeHomeworkDict = document.getElementById('closeHomeworkDict');
+        if (closeHomeworkDict) {
+            closeHomeworkDict.addEventListener('click', () => this.hideHomeworkDict());
+        }
+        
+        const dictSearchInput = document.getElementById('dictSearchInput');
+        if (dictSearchInput) {
+            dictSearchInput.addEventListener('input', (e) => this.filterDictionary(e.target.value));
+        }
+        
+        const startTestBtn = document.getElementById('startTestBtn');
+        if (startTestBtn) {
+            startTestBtn.addEventListener('click', () => this.startTest());
+        }
+        
+        const startFlashcardsBtn = document.getElementById('startFlashcardsBtn');
+        if (startFlashcardsBtn) {
+            startFlashcardsBtn.addEventListener('click', () => this.startFlashcards());
+        }
+        
+        // Обработчики для переключателей категорий
+        const categoryAER = document.getElementById('categoryAER');
+        const categoryAE = document.getElementById('categoryAE');
+        
+        if (categoryAER) {
+            categoryAER.addEventListener('click', () => this.selectCategory('AER'));
+        }
+        if (categoryAE) {
+            categoryAE.addEventListener('click', () => this.selectCategory('AE'));
+        }
 
 
         document.addEventListener('keydown', (e) => {
@@ -747,8 +890,91 @@ class ScheduleApp {
                 this.closeModal();
                 this.closeSettings();
                 this.hideCommonGapsModal();
+                this.hideHomeworkDict();
+                return;
+            }
+            // Навигация по дням
+            const order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            const idx = order.indexOf(this.currentDay);
+            if (e.key === 'ArrowLeft') {
+                const prev = idx > 0 ? order[idx - 1] : order[order.length - 1];
+                this.selectDay(prev);
+            }
+            if (e.key === 'ArrowRight') {
+                const next = idx < order.length - 1 ? order[idx + 1] : order[0];
+                this.selectDay(next);
             }
         });
+    }
+    changeLocale(locale) {
+        this.locale = locale;
+        localStorage.setItem('locale', locale);
+        this.renderSchedule();
+        this.updateCurrentGroupDisplay();
+        this.showQuickNotification(this.t('languageChanged'), this.t('currentLanguage'));
+    }
+
+    addHoliday(dateStr) {
+        if (!dateStr) return;
+        if (!this.holidays.includes(dateStr)) {
+            this.holidays.push(dateStr);
+            localStorage.setItem('holidays', JSON.stringify(this.holidays));
+            this.renderSchedule();
+            this.showQuickNotification(this.t('holidayAdded'), dateStr);
+        }
+    }
+
+    isHoliday(date) {
+        const y = date.getFullYear();
+        const m = (date.getMonth() + 1).toString().padStart(2, '0');
+        const d = date.getDate().toString().padStart(2, '0');
+        const key = `${y}-${m}-${d}`;
+        return this.holidays.includes(key);
+    }
+
+    t(key) {
+        const dict = {
+            ru: {
+                Monday: 'Понедельник', Tuesday: 'Вторник', Wednesday: 'Среда', Thursday: 'Четверг', Friday: 'Пятница',
+                noLessons: 'Пар нет',
+                today: ' (сегодня)',
+                freeTotal: 'Свободно',
+                now: 'Сейчас идет',
+                inXm: 'Через',
+                minutesShort: 'м',
+                languageChanged: 'Язык изменён',
+                currentLanguage: 'Настройки сохранены',
+                holidayAdded: 'Дата добавлена в праздники',
+                holidayToday: 'Праздничный день — занятия отменены'
+            },
+            uz: {
+                Monday: 'Dushanba', Tuesday: 'Seshanba', Wednesday: 'Chorshanba', Thursday: 'Payshanba', Friday: 'Juma',
+                noLessons: 'Dars yo‘q',
+                today: ' (bugun)',
+                freeTotal: 'Bo‘sh',
+                now: 'Hozir dars',
+                inXm: 'Yana',
+                minutesShort: 'daq',
+                languageChanged: 'Til o‘zgartirildi',
+                currentLanguage: 'Sozlamalar saqlandi',
+                holidayAdded: 'Sana bayramlarga qo‘shildi',
+                holidayToday: 'Bayram kuni — darslar bekor qilindi'
+            },
+            en: {
+                Monday: 'Monday', Tuesday: 'Tuesday', Wednesday: 'Wednesday', Thursday: 'Thursday', Friday: 'Friday',
+                noLessons: 'No classes',
+                today: ' (today)',
+                freeTotal: 'Free',
+                now: 'Ongoing',
+                inXm: 'In',
+                minutesShort: 'm',
+                languageChanged: 'Language changed',
+                currentLanguage: 'Settings saved',
+                holidayAdded: 'Date added to holidays',
+                holidayToday: 'Holiday — classes canceled'
+            }
+        };
+        return (dict[this.locale] && dict[this.locale][key]) || key;
     }
 
     setupTheme() {
@@ -840,7 +1066,10 @@ class ScheduleApp {
         const currentDay = this.getDayName(today.getDay());
         const todayLessons = this.scheduleData[currentDay] || [];
 
-        todayLessons.forEach(lesson => {
+        // Фильтруем только уроки (не окна)
+        const actualLessons = todayLessons.filter(lesson => !lesson.gap && lesson.time);
+        
+        actualLessons.forEach(lesson => {
             const [startTime] = lesson.time.split('-');
             const [hours, minutes] = startTime.split(':').map(Number);
             
@@ -890,10 +1119,6 @@ class ScheduleApp {
     }
 
     renderSchedule() {
-        console.log('renderSchedule вызвана');
-        console.log('currentDay:', this.currentDay);
-        console.log('filteredData:', this.filteredData);
-        
         const container = document.getElementById('scheduleContent');
         if (!container) {
             console.error('Элемент scheduleContent не найден');
@@ -903,29 +1128,21 @@ class ScheduleApp {
 
         const selectedDay = this.currentDay || 'Monday';
         const lessons = this.filteredData[selectedDay] || [];
-        console.log('Выбранный день:', selectedDay);
-        console.log('Уроки для дня:', lessons);
         
-        const dayNames = {
-            'Monday': 'Понедельник',
-            'Tuesday': 'Вторник', 
-            'Wednesday': 'Среда',
-            'Thursday': 'Четверг',
-            'Friday': 'Пятница'
-        };
-        const dayCard = this.createDayCard(dayNames[selectedDay], lessons, selectedDay);
+        const dayCard = this.createDayCard(this.t(selectedDay), lessons, selectedDay);
         container.appendChild(dayCard);
-
-        this.highlightCurrentDay();
     }
 
     createDayCard(dayName, lessons, dayKey) {
         const card = document.createElement('div');
         card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 fade-in';
         
-        const sortedItems = this.sortItemsByTime(lessons);
-        const lessonsCount = sortedItems.filter(item => !item.gap).length;
-        const gapsCount = sortedItems.filter(item => item.gap).length;
+        const actualLessons = (lessons || []).filter(item => !item.gap && item.time);
+        const computedGaps = computeGaps(actualLessons, this.minGapMinutes);
+        const itemsToRender = this.showGaps ? mergeLessonsWithGaps(actualLessons, computedGaps, true) : actualLessons;
+        const sortedItems = this.sortItemsByTime(itemsToRender);
+        const lessonsCount = actualLessons.length;
+        const gapsCount = this.showGaps ? computedGaps.length : 0;
         
         const isToday = this.isToday(dayKey);
         const todayClass = isToday ? 'border-primary border-2' : '';
@@ -938,13 +1155,19 @@ class ScheduleApp {
         if (gapsCount > 0) {
             headerText += ` • ${gapsCount} окон`;
         }
+        if (gapsCount > 0) {
+            const totalFreeMinutes = computedGaps.reduce((sum, g) => sum + (g.durationMinutes || 0), 0);
+            if (totalFreeMinutes > 0) {
+                headerText += ` • ${this.t('freeTotal')}: ${formatDuration(totalFreeMinutes)}`;
+            }
+        }
         
         const currentTime = this.getCurrentTimeStatus(dayKey, lessons);
         
         header.innerHTML = `
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${dayName}${isToday ? ' (сегодня)' : ''}</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${dayName}${isToday ? this.t('today') : ''}</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400">${headerText}</p>
                 </div>
                 ${currentTime ? `<div class="text-xs text-primary font-medium">${currentTime}</div>` : ''}
@@ -960,7 +1183,7 @@ class ScheduleApp {
                     <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                     </svg>
-                    <p>Пар нет</p>
+                    <p>${this.t('noLessons')}</p>
                 </div>
             `;
         } else {
@@ -1015,9 +1238,15 @@ class ScheduleApp {
         if (!this.isToday(dayKey)) return null;
         
         const now = new Date();
+        if (this.isHoliday(now)) {
+            return this.t('holidayToday');
+        }
         const currentTime = now.getHours() * 60 + now.getMinutes();
         
-        const sortedLessons = [...lessons].sort((a, b) => {
+        // Фильтруем только уроки (не окна)
+        const actualLessons = lessons.filter(lesson => !lesson.gap && lesson.time);
+        
+        const sortedLessons = [...actualLessons].sort((a, b) => {
             const aTime = parseTime(a.time);
             const bTime = parseTime(b.time);
             return aTime.startMinutes - bTime.startMinutes;
@@ -1026,7 +1255,8 @@ class ScheduleApp {
         for (let lesson of sortedLessons) {
             const lessonTime = parseTime(lesson.time);
             if (currentTime >= lessonTime.startMinutes && currentTime <= lessonTime.endMinutes) {
-                return 'Сейчас идет';
+                const remaining = lessonTime.endMinutes - currentTime;
+                return `Сейчас идет • осталось ${remaining}м`;
             }
             if (lessonTime.startMinutes > currentTime) {
                 const minutesUntil = lessonTime.startMinutes - currentTime;
@@ -1038,6 +1268,19 @@ class ScheduleApp {
         }
         
         return null;
+    }
+
+    getLessonProgress(lesson) {
+        if (!lesson || !lesson.time) return null;
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        const { startMinutes, endMinutes } = parseTime(lesson.time);
+        if (currentTime < startMinutes || currentTime > endMinutes) return null;
+        const total = endMinutes - startMinutes;
+        const elapsed = currentTime - startMinutes;
+        const percent = Math.max(0, Math.min(100, Math.round((elapsed / total) * 100)));
+        const remainingMinutes = endMinutes - currentTime;
+        return { percent, remainingMinutes };
     }
 
     createGapCard(gap) {
@@ -1056,7 +1299,7 @@ class ScheduleApp {
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between">
                         <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Окно • ${gap.duration}
+                            Окно • ${gap.duration || gap.pretty}
                         </h4>
                         <span class="text-xs text-gray-500 dark:text-gray-400">${gap.start}–${gap.end}</span>
                     </div>
@@ -1095,6 +1338,7 @@ class ScheduleApp {
                             <span class="teacher-link cursor-pointer hover:text-primary" data-email="${lesson.email}">${lesson.teacher}</span> • 
                             <span class="room-copy cursor-pointer hover:text-primary" data-room="${lesson.room}">${lesson.room}</span>
                         </p>
+                        ${(() => { const p = this.getLessonProgress(lesson); return p ? `<div class=\"w-full h-1 bg-gray-200 dark:bg-gray-700 rounded mt-1\"><div class=\"h-1 bg-primary rounded\" style=\"width:${p.percent}%\"></div></div><div class=\"text-[10px] text-gray-500 dark:text-gray-400 mt-0.5\">осталось ${p.remainingMinutes}м</div>` : '' })()}
                     </div>
                 </div>
             `;
@@ -1115,7 +1359,7 @@ class ScheduleApp {
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             <span class="room-copy cursor-pointer hover:text-primary underline" data-room="${lesson.room}">${lesson.room}</span>
                         </p>
-                        ${isCurrentLesson ? '<p class="text-xs text-primary font-medium mt-1">Сейчас идет</p>' : ''}
+                        ${(() => { const p = this.getLessonProgress(lesson); return p ? `<div class=\"w-full h-1 bg-gray-200 dark:bg-gray-700 rounded mt-2\"><div class=\"h-1 bg-primary rounded\" style=\"width:${p.percent}%\"></div></div><p class=\"text-xs text-primary font-medium mt-1\">Сейчас идет • осталось ${p.remainingMinutes}м</p>` : (isCurrentLesson ? '<p class=\"text-xs text-primary font-medium mt-1\">Сейчас идет</p>' : '') })()}
                     </div>
                 </div>
             `;
@@ -1152,6 +1396,9 @@ class ScheduleApp {
     }
 
     isCurrentLesson(lesson) {
+        // Проверяем, что это урок (не окно) и есть время
+        if (lesson.gap || !lesson.time) return false;
+        
         const now = new Date();
         const currentTime = now.getHours() * 60 + now.getMinutes();
         const currentDay = this.getDayName(now.getDay());
@@ -1179,7 +1426,17 @@ class ScheduleApp {
         const currentDay = this.getDayName(today.getDay());
         const dayBtn = document.querySelector(`[data-day="${currentDay}"]`);
         
-        if (dayBtn && !dayBtn.classList.contains('bg-primary')) {
+        if (dayBtn) {
+            // Переключаем на текущий день
+            this.currentDay = currentDay;
+            
+            // Обновляем стили кнопок
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+            });
+            
+            // Подсвечиваем текущий день
             dayBtn.classList.add('bg-primary', 'text-white');
             dayBtn.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
         }
@@ -1382,6 +1639,12 @@ END:VCALENDAR`;
                     lessons = [];
                 }
             }
+            // Если сегодня праздник — скрываем пары сегодняшнего дня
+            const today = new Date();
+            const currentDay = this.getDayName(today.getDay());
+            if (day === currentDay && this.isHoliday(today)) {
+                lessons = [];
+            }
             
             lessons = lessons.filter(item => {
                 if (item.gap) {
@@ -1463,67 +1726,7 @@ END:VCALENDAR`;
         });
     }
 
-    openSettings() {
-        const modal = document.getElementById('settingsModal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        document.getElementById('reminderTime').value = this.reminderTime;
-        document.getElementById('minGapMinutes').value = this.minGapMinutes;
-        document.getElementById('groupSelect').value = this.selectedGroup;
-        
-        const thumb = document.getElementById('notificationThumb');
-        const toggle = document.getElementById('notificationToggle');
-        
-        if (this.notificationsEnabled) {
-            thumb.classList.add('translate-x-6');
-            toggle.classList.add('bg-primary');
-            toggle.classList.remove('bg-gray-200', 'dark:bg-gray-600');
-        } else {
-            thumb.classList.remove('translate-x-6');
-            toggle.classList.remove('bg-primary');
-            toggle.classList.add('bg-gray-200', 'dark:bg-gray-600');
-        }
-        
-        const gapsThumb = document.getElementById('gapsThumb');
-        const gapsToggle = document.getElementById('gapsToggle');
-        
-        if (this.showGaps) {
-            gapsThumb.classList.add('translate-x-6');
-            gapsToggle.classList.add('bg-primary');
-            gapsToggle.classList.remove('bg-gray-200', 'dark:bg-gray-600');
-        } else {
-            gapsThumb.classList.remove('translate-x-6');
-            gapsToggle.classList.remove('bg-primary');
-            gapsToggle.classList.add('bg-gray-200', 'dark:bg-gray-600');
-        }
-        
-        const calendarThumb = document.getElementById('calendarThumb');
-        const calendarToggle = document.getElementById('calendarToggle');
-        
-        if (this.includeGapsInCalendar) {
-            calendarThumb.classList.add('translate-x-6');
-            calendarToggle.classList.add('bg-primary');
-            calendarToggle.classList.remove('bg-gray-200', 'dark:bg-gray-600');
-        } else {
-            calendarThumb.classList.remove('translate-x-6');
-            calendarToggle.classList.remove('bg-primary');
-            calendarToggle.classList.add('bg-gray-200', 'dark:bg-gray-600');
-        }
-        
-        const compactThumb = document.getElementById('compactThumb');
-        const compactToggle = document.getElementById('compactToggle');
-        
-        if (this.compactMode) {
-            compactThumb.classList.add('translate-x-6');
-            compactToggle.classList.add('bg-primary');
-            compactToggle.classList.remove('bg-gray-200', 'dark:bg-gray-600');
-        } else {
-            compactThumb.classList.remove('translate-x-6');
-            compactToggle.classList.remove('bg-primary');
-            compactToggle.classList.add('bg-gray-200', 'dark:bg-gray-600');
-        }
-    }
+   
 
     closeSettings() {
         const modal = document.getElementById('settingsModal');
@@ -1568,63 +1771,811 @@ END:VCALENDAR`;
         }
     }
 
-    openInTelegram() {
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.openTelegramLink('https://t.me/your_bot_username');
-        } else {
-            window.open('https://t.me/your_bot_username', '_blank');
+    showWelcomeTips() {
+        // Показываем подсказки для новых пользователей
+        if (localStorage.getItem('welcomeTipsShown') !== 'true') {
+            setTimeout(() => {
+                this.showQuickNotification('Добро пожаловать!', 'Используйте фильтры для поиска нужных пар');
+                localStorage.setItem('welcomeTipsShown', 'true');
+            }, 1000);
         }
     }
 
+    openSettings() {
+        const modal = document.getElementById('settingsModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    }
 
     showQuickNotification(title, message) {
+        // Создаем простое уведомление
         const notification = document.createElement('div');
-        notification.className = 'notification fixed top-20 left-4 right-4 p-4 rounded-lg z-50 slide-in';
+        notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 fade-in';
         notification.innerHTML = `
-            <div class="flex items-center justify-between">
-                <div>
-                    <h4 class="font-semibold">${title}</h4>
-                    <p class="text-sm opacity-90">${message}</p>
-                </div>
-                <button class="text-white hover:text-gray-200" onclick="this.parentElement.parentElement.remove()">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
+            <div class="font-semibold">${title}</div>
+            <div class="text-sm opacity-90">${message}</div>
         `;
         
         document.body.appendChild(notification);
         
+        // Убираем уведомление через 3 секунды
         setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 5000);
+            notification.remove();
+        }, 3000);
     }
 
-
-
-    showWelcomeTips() {
-        const hasSeenTips = localStorage.getItem('hasSeenTips');
-        if (hasSeenTips) return;
+    showHomeworkDict() {
+        const modal = document.getElementById('homeworkDictModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            this.updateCategoryButtons();
+            this.updateCategoryCounts();
+            this.renderDictionary();
+        }
+    }
+    
+    selectCategory(category) {
+        this.selectedCategory = category;
+        localStorage.setItem('selectedDictionaryCategory', category);
+        this.updateCategoryButtons();
+        this.renderDictionary();
+        // Очищаем поиск при смене категории
+        const searchInput = document.getElementById('dictSearchInput');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+    }
+    
+    updateCategoryButtons() {
+        const categoryAER = document.getElementById('categoryAER');
+        const categoryAE = document.getElementById('categoryAE');
         
-        setTimeout(() => {
-            this.showQuickNotification(
-                'Добро пожаловать! 🎓',
-                'Используйте кнопки дней недели для навигации'
-            );
-            
-            setTimeout(() => {
-                this.showQuickNotification(
-                    'Совет 💡',
-                    'Кликните на карточку занятия для подробной информации'
-                );
-            }, 3000);
-            
-            localStorage.setItem('hasSeenTips', 'true');
-        }, 1000);
+        if (categoryAER) {
+            if (this.selectedCategory === 'AER') {
+                categoryAER.classList.add('active');
+            } else {
+                categoryAER.classList.remove('active');
+            }
+        }
+        
+        if (categoryAE) {
+            if (this.selectedCategory === 'AE') {
+                categoryAE.classList.add('active');
+            } else {
+                categoryAE.classList.remove('active');
+            }
+        }
     }
+    
+    updateCategoryCounts() {
+        const aerCount = document.getElementById('aerCount');
+        const aeCount = document.getElementById('aeCount');
+        
+        if (aerCount) {
+            const count = Object.keys(homeworkDictionary['AER'] || {}).length;
+            aerCount.textContent = count;
+        }
+        
+        if (aeCount) {
+            const count = Object.keys(homeworkDictionary['AE'] || {}).length;
+            aeCount.textContent = count;
+        }
+    }
+
+    hideHomeworkDict() {
+        const modal = document.getElementById('homeworkDictModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+
+    renderDictionary(searchTerm = '') {
+        const content = document.getElementById('homeworkDictContent');
+        if (!content) return;
+
+        content.innerHTML = '';
+
+        // Показываем только выбранную категорию
+        const category = this.selectedCategory || 'AER';
+        const terms = homeworkDictionary[category] || {};
+        const filteredTerms = Object.entries(terms).filter(([english, russian]) => {
+            if (!searchTerm) return true;
+            const searchLower = searchTerm.toLowerCase();
+            return english.toLowerCase().includes(searchLower) || 
+                   russian.toLowerCase().includes(searchLower);
+        });
+
+        if (filteredTerms.length === 0) {
+            content.innerHTML = `
+                <div class="text-center py-8">
+                    <p class="text-gray-500 dark:text-gray-400">Слова не найдены</p>
+                </div>
+            `;
+            return;
+        }
+
+        const categorySection = document.createElement('div');
+        categorySection.className = 'category-section mb-6';
+
+        const categoryHeader = document.createElement('div');
+        categoryHeader.className = 'category-header mb-4';
+        
+        // Определяем цвет и описание для категории
+        let categoryColor = 'bg-gray-500';
+        let categoryDescription = '';
+        
+        switch(category) {
+            case 'AER':
+                categoryColor = 'bg-blue-500';
+                categoryDescription = 'Академическое чтение на английском языке';
+                break;
+            case 'AE':
+                categoryColor = 'bg-purple-500';
+                categoryDescription = 'Академический английский';
+                break;
+        }
+        
+        categoryHeader.innerHTML = `
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                <span class="w-3 h-3 rounded-full mr-3 ${categoryColor}"></span>
+                ${category}
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                ${categoryDescription}
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                Найдено слов: ${filteredTerms.length} из ${Object.keys(terms).length}
+            </p>
+        `;
+
+        categorySection.appendChild(categoryHeader);
+
+        const termsContainer = document.createElement('div');
+        termsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+
+        filteredTerms.forEach(([english, russian]) => {
+            const termCard = document.createElement('div');
+            termCard.className = 'term-card p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200';
+            
+            termCard.innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-1">${english}</h4>
+                        <p class="text-gray-600 dark:text-gray-400">${russian}</p>
+                    </div>
+                    <div class="ml-3 flex-shrink-0">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${this.getCategoryTagClass(category)}">
+                            ${category}
+                        </span>
+                    </div>
+                </div>
+            `;
+
+            termsContainer.appendChild(termCard);
+        });
+
+        categorySection.appendChild(termsContainer);
+        content.appendChild(categorySection);
+    }
+
+    filterDictionary(searchTerm) {
+        this.renderDictionary(searchTerm);
+    }
+
+    getCategoryTagClass(category) {
+        switch(category) {
+            case 'AER':
+                return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+            case 'AE':
+                return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+            default:
+                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        }
+    }
+
+    startTest() {
+        this.testData = {
+            currentQuestion: 0,
+            score: 0,
+            totalQuestions: 0,
+            questions: [],
+            answers: []
+        };
+        
+        this.generateTestQuestions();
+        this.showTestQuestion();
+    }
+
+    generateTestQuestions() {
+        // Используем только выбранную категорию
+        const category = this.selectedCategory || 'AER';
+        const categoryWords = homeworkDictionary[category] || {};
+        const words = Object.entries(categoryWords).map(([english, russian]) => ({
+            english,
+            russian,
+            category
+        }));
+        
+        this.testData.totalQuestions = Math.min(10, words.length);
+        this.testData.questions = [];
+        
+        // Случайно выбираем слова для теста
+        const shuffledWords = [...words].sort(() => Math.random() - 0.5);
+        
+        for (let i = 0; i < this.testData.totalQuestions; i++) {
+            const wordObj = shuffledWords[i];
+            const { english, russian, category } = wordObj;
+            const questionType = Math.random() < 0.5 ? 'translate' : 'definition';
+            
+            if (questionType === 'translate') {
+                // Тест на перевод: английское слово -> русский перевод
+                const correctAnswer = russian.split(' — ')[0]; // Берем только основное значение
+                const wrongAnswers = this.getWrongAnswers(words, correctAnswer, 3);
+                const allAnswers = [correctAnswer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+                
+                this.testData.questions.push({
+                    type: 'translate',
+                    question: `Переведите слово: "${english}"`,
+                    correctAnswer: correctAnswer,
+                    allAnswers: allAnswers,
+                    word: english,
+                    category: category
+                });
+            } else {
+                // Тест на определение: русское определение -> английское слово
+                const wrongWords = this.getWrongWords(words, english, 3);
+                const allWordsForQuestion = [english, ...wrongWords].sort(() => Math.random() - 0.5);
+                
+                this.testData.questions.push({
+                    type: 'definition',
+                    question: `Какое слово означает: "${russian.split(' — ')[1] || russian}"`,
+                    correctAnswer: english,
+                    allAnswers: allWordsForQuestion,
+                    word: english,
+                    category: category
+                });
+            }
+        }
+    }
+
+    getWrongAnswers(words, correctAnswer, count) {
+        const wrongAnswers = [];
+        const usedAnswers = new Set([correctAnswer]);
+        
+        while (wrongAnswers.length < count && wrongAnswers.length < words.length - 1) {
+            const randomWord = words[Math.floor(Math.random() * words.length)];
+            const answer = randomWord.russian.split(' — ')[0];
+            if (!usedAnswers.has(answer)) {
+                wrongAnswers.push(answer);
+                usedAnswers.add(answer);
+            }
+        }
+        
+        return wrongAnswers;
+    }
+
+    getWrongWords(words, correctWord, count) {
+        const wrongWords = [];
+        const usedWords = new Set([correctWord]);
+        
+        while (wrongWords.length < count && wrongWords.length < words.length - 1) {
+            const randomWord = words[Math.floor(Math.random() * words.length)];
+            const word = randomWord.english;
+            if (!usedWords.has(word)) {
+                wrongWords.push(word);
+                usedWords.add(word);
+            }
+        }
+        
+        return wrongWords;
+    }
+
+    showTestQuestion() {
+        const content = document.getElementById('homeworkDictContent');
+        if (!content) return;
+
+        const question = this.testData.questions[this.testData.currentQuestion];
+        
+        content.innerHTML = `
+            <div class="test-container">
+                <div class="test-header mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Тест по словарю</h3>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">
+                            Вопрос ${this.testData.currentQuestion + 1} из ${this.testData.totalQuestions}
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                             style="width: ${((this.testData.currentQuestion + 1) / this.testData.totalQuestions) * 100}%"></div>
+                    </div>
+                </div>
+                
+                <div class="test-question mb-6">
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">${question.question}</h4>
+                        <div class="space-y-3">
+                            ${question.allAnswers.map((answer, index) => `
+                                <button class="answer-btn w-full text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" 
+                                        data-answer="${answer}">
+                                    <div class="flex items-center">
+                                        <span class="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600 mr-3 flex items-center justify-center">
+                                            <span class="text-sm font-medium">${String.fromCharCode(65 + index)}</span>
+                                        </span>
+                                        <span class="text-gray-900 dark:text-white">${answer}</span>
+                                    </div>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-actions flex justify-between">
+                    <button id="skipQuestion" class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                        Пропустить
+                    </button>
+                    <button id="showHint" class="px-4 py-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 transition-colors">
+                        Подсказка
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Добавляем обработчики событий
+        content.querySelectorAll('.answer-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.selectAnswer(e.target.closest('.answer-btn')));
+        });
+
+        const skipBtn = content.querySelector('#skipQuestion');
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => this.nextQuestion());
+        }
+
+        const hintBtn = content.querySelector('#showHint');
+        if (hintBtn) {
+            hintBtn.addEventListener('click', () => this.showHint(question));
+        }
+    }
+
+    selectAnswer(button) {
+        const selectedAnswer = button.getAttribute('data-answer');
+        const question = this.testData.questions[this.testData.currentQuestion];
+        
+        // Отключаем все кнопки
+        button.parentElement.querySelectorAll('.answer-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.remove('hover:bg-gray-50', 'dark:hover:bg-gray-700');
+        });
+
+        // Подсвечиваем правильный и неправильный ответы
+        button.parentElement.querySelectorAll('.answer-btn').forEach(btn => {
+            const answer = btn.getAttribute('data-answer');
+            if (answer === question.correctAnswer) {
+                btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                btn.querySelector('.w-6').classList.add('bg-green-500', 'border-green-500', 'text-white');
+            } else if (answer === selectedAnswer && answer !== question.correctAnswer) {
+                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                btn.querySelector('.w-6').classList.add('bg-red-500', 'border-red-500', 'text-white');
+            }
+        });
+
+        // Показываем анимацию успеха для правильного ответа
+        if (selectedAnswer === question.correctAnswer) {
+            this.showTestSuccessAnimation(button);
+        }
+
+        // Записываем ответ
+        this.testData.answers.push({
+            question: question,
+            selectedAnswer: selectedAnswer,
+            isCorrect: selectedAnswer === question.correctAnswer
+        });
+
+        if (selectedAnswer === question.correctAnswer) {
+            this.testData.score++;
+        }
+
+        // Автоматически переходим к следующему вопросу через 1.5 секунды
+        setTimeout(() => {
+            this.nextQuestion();
+        }, 1500);
+    }
+
+    showHint(question) {
+        const category = question.category || "AER";
+        const hint = homeworkDictionary[category]?.[question.word] || homeworkDictionary["AER"][question.word] || homeworkDictionary["AE"][question.word];
+        if (hint) {
+            this.showQuickNotification('Подсказка', hint);
+        }
+    }
+
+    showTestSuccessAnimation(button) {
+        // Добавляем анимацию пульса к правильному ответу
+        button.classList.add('success-animation');
+        
+        // Создаем конфетти вокруг кнопки
+        this.createTestConfetti(button);
+        
+        // Убираем анимацию через некоторое время
+        setTimeout(() => {
+            button.classList.remove('success-animation');
+        }, 600);
+    }
+
+    createTestConfetti(button) {
+        const rect = button.getBoundingClientRect();
+        const container = button.closest('.test-question');
+        
+        for (let i = 0; i < 6; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.position = 'absolute';
+            confetti.style.left = (rect.left + rect.width / 2 - 5) + 'px';
+            confetti.style.top = (rect.top + rect.height / 2) + 'px';
+            confetti.style.zIndex = '1000';
+            
+            // Случайные цвета для конфетти
+            const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444'];
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.body.appendChild(confetti);
+            
+            // Удаляем конфетти после анимации
+            setTimeout(() => {
+                if (confetti.parentNode) {
+                    confetti.parentNode.removeChild(confetti);
+                }
+            }, 1000);
+        }
+    }
+
+    nextQuestion() {
+        this.testData.currentQuestion++;
+        
+        if (this.testData.currentQuestion < this.testData.totalQuestions) {
+            this.showTestQuestion();
+        } else {
+            this.showTestResults();
+        }
+    }
+
+    showTestResults() {
+        const content = document.getElementById('homeworkDictContent');
+        if (!content) return;
+
+        const percentage = Math.round((this.testData.score / this.testData.totalQuestions) * 100);
+        const isGood = percentage >= 70;
+        
+        content.innerHTML = `
+            <div class="test-results text-center">
+                <div class="mb-6">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center ${isGood ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${isGood ? 
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' :
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+                            }
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        ${isGood ? 'Отлично!' : 'Нужно подучить!'}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">
+                        Вы набрали ${this.testData.score} из ${this.testData.totalQuestions} баллов (${percentage}%)
+                    </p>
+                </div>
+                
+                <div class="space-y-4 mb-6">
+                    ${this.testData.answers.map((answer, index) => `
+                        <div class="text-left p-4 border rounded-lg ${answer.isCorrect ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800'}">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium text-gray-900 dark:text-white">Вопрос ${index + 1}</span>
+                                <span class="text-sm ${answer.isCorrect ? 'text-green-600' : 'text-red-600'}">
+                                    ${answer.isCorrect ? '✓ Правильно' : '✗ Неправильно'}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                <strong>Ваш ответ:</strong> ${answer.selectedAnswer}<br>
+                                <strong>Правильный ответ:</strong> ${answer.question.correctAnswer}
+                            </p>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                    <button id="retakeTest" class="btn-secondary px-6 py-3 text-white rounded-lg w-full sm:w-auto">
+                        Пройти еще раз
+                    </button>
+                    <button id="backToDict" class="btn-primary px-6 py-3 text-white rounded-lg w-full sm:w-auto">
+                        Вернуться к словарю
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Добавляем обработчики событий
+        const retakeBtn = content.querySelector('#retakeTest');
+        if (retakeBtn) {
+            retakeBtn.addEventListener('click', () => this.startTest());
+        }
+
+        const backBtn = content.querySelector('#backToDict');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => this.renderDictionary());
+        }
+    }
+
+    startFlashcards() {
+        this.flashcardData = {
+            currentCard: 0,
+            cards: [],
+            knownCards: [],
+            unknownCards: [],
+            isFlipped: false
+        };
+        
+        this.generateFlashcards();
+        this.showFlashcard();
+    }
+
+    generateFlashcards() {
+        // Используем только выбранную категорию
+        const category = this.selectedCategory || 'AER';
+        const categoryWords = homeworkDictionary[category] || {};
+        const words = Object.entries(categoryWords);
+        
+        this.flashcardData.cards = words.map(([english, russian]) => ({
+            english: english,
+            russian: russian,
+            definition: russian.split(' — ')[1] || russian,
+            mainTranslation: russian.split(' — ')[0],
+            category: category
+        }));
+        
+        // Перемешиваем карточки
+        this.flashcardData.cards = this.flashcardData.cards.sort(() => Math.random() - 0.5);
+    }
+
+    showFlashcard() {
+        const content = document.getElementById('homeworkDictContent');
+        if (!content) return;
+
+        const card = this.flashcardData.cards[this.flashcardData.currentCard];
+        
+        content.innerHTML = `
+            <div class="flashcard-container">
+                <div class="flashcard-progress">
+                    ${this.flashcardData.cards.map((_, index) => `
+                        <div class="progress-dot ${index === this.flashcardData.currentCard ? 'active' : ''} ${index < this.flashcardData.currentCard ? 'completed' : ''}"></div>
+                    `).join('')}
+                </div>
+                
+                <div class="text-center mb-4">
+                    <h3 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Карточки для запоминания</h3>
+                    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                        Карточка ${this.flashcardData.currentCard + 1} из ${this.flashcardData.cards.length}
+                    </p>
+                </div>
+                
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <div class="flashcard-word">${card.english}</div>
+                            <div class="flashcard-hint">Нажмите, чтобы увидеть перевод</div>
+                        </div>
+                        <div class="flashcard-back">
+                            <div class="flashcard-word">${card.mainTranslation}</div>
+                            <div class="flashcard-definition">${card.definition}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flashcard-controls">
+                    <button class="flashcard-btn dont-know" id="dontKnowBtn">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span class="text-sm sm:text-base">Не знаю</span>
+                    </button>
+                    <button class="flashcard-btn know" id="knowBtn">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-sm sm:text-base">Знаю</span>
+                    </button>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button id="backToDictFromCards" class="text-sm sm:text-base text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                        ← Вернуться к словарю
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Добавляем обработчики событий
+        const flashcard = content.querySelector('#flashcard');
+        if (flashcard) {
+            flashcard.addEventListener('click', () => this.flipCard());
+        }
+
+        const dontKnowBtn = content.querySelector('#dontKnowBtn');
+        if (dontKnowBtn) {
+            dontKnowBtn.addEventListener('click', () => this.markCardAsUnknown());
+        }
+
+        const knowBtn = content.querySelector('#knowBtn');
+        if (knowBtn) {
+            knowBtn.addEventListener('click', () => this.markCardAsKnown());
+        }
+
+        const backBtn = content.querySelector('#backToDictFromCards');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => this.renderDictionary());
+        }
+    }
+
+    flipCard() {
+        const flashcard = document.getElementById('flashcard');
+        if (flashcard) {
+            flashcard.classList.toggle('flipped');
+            this.flashcardData.isFlipped = !this.flashcardData.isFlipped;
+        }
+    }
+
+    markCardAsKnown() {
+        const card = this.flashcardData.cards[this.flashcardData.currentCard];
+        this.flashcardData.knownCards.push(card);
+        
+        this.showSuccessAnimation();
+        this.nextFlashcard();
+    }
+
+    markCardAsUnknown() {
+        const card = this.flashcardData.cards[this.flashcardData.currentCard];
+        this.flashcardData.unknownCards.push(card);
+        
+        this.nextFlashcard();
+    }
+
+    showSuccessAnimation() {
+        const flashcard = document.getElementById('flashcard');
+        if (flashcard) {
+            // Добавляем анимацию успеха
+            flashcard.classList.add('success-animation');
+            
+            // Создаем конфетти
+            this.createConfetti();
+            
+            // Убираем анимацию через некоторое время
+            setTimeout(() => {
+                flashcard.classList.remove('success-animation');
+            }, 600);
+        }
+    }
+
+    createConfetti() {
+        const flashcard = document.getElementById('flashcard');
+        if (!flashcard) return;
+
+        for (let i = 0; i < 4; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = (20 + i * 20) + '%';
+            confetti.style.top = '50%';
+            flashcard.appendChild(confetti);
+            
+            // Удаляем конфетти после анимации
+            setTimeout(() => {
+                if (confetti.parentNode) {
+                    confetti.parentNode.removeChild(confetti);
+                }
+            }, 1000);
+        }
+    }
+
+    nextFlashcard() {
+        this.flashcardData.currentCard++;
+        
+        if (this.flashcardData.currentCard < this.flashcardData.cards.length) {
+            this.flashcardData.isFlipped = false;
+            this.showFlashcard();
+        } else {
+            this.showFlashcardResults();
+        }
+    }
+
+    showFlashcardResults() {
+        const content = document.getElementById('homeworkDictContent');
+        if (!content) return;
+
+        const knownCount = this.flashcardData.knownCards.length;
+        const unknownCount = this.flashcardData.unknownCards.length;
+        const totalCount = this.flashcardData.cards.length;
+        const percentage = Math.round((knownCount / totalCount) * 100);
+
+        content.innerHTML = `
+            <div class="flashcard-results text-center">
+                <div class="mb-6">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center ${percentage >= 70 ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        Отлично! Вы изучили карточки
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">
+                        Знаете: ${knownCount} из ${totalCount} слов (${percentage}%)
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                        <h4 class="font-semibold text-green-800 dark:text-green-200 mb-2">✓ Знаете (${knownCount})</h4>
+                        <div class="text-sm text-green-700 dark:text-green-300">
+                            ${this.flashcardData.knownCards.map(card => card.english).join(', ')}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                        <h4 class="font-semibold text-red-800 dark:text-red-200 mb-2">✗ Нужно повторить (${unknownCount})</h4>
+                        <div class="text-sm text-red-700 dark:text-red-300">
+                            ${this.flashcardData.unknownCards.map(card => card.english).join(', ')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                    <button id="repeatUnknown" class="btn-secondary px-6 py-3 text-white rounded-lg w-full sm:w-auto">
+                        Повторить неизвестные
+                    </button>
+                    <button id="repeatAll" class="btn-primary px-6 py-3 text-white rounded-lg w-full sm:w-auto">
+                        Повторить все
+                    </button>
+                    <button id="backToDictFromResults" class="btn-accent px-6 py-3 text-white rounded-lg w-full sm:w-auto">
+                        К словарю
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Добавляем обработчики событий
+        const repeatUnknownBtn = content.querySelector('#repeatUnknown');
+        if (repeatUnknownBtn) {
+            repeatUnknownBtn.addEventListener('click', () => {
+                this.flashcardData.cards = this.flashcardData.unknownCards;
+                this.flashcardData.currentCard = 0;
+                this.flashcardData.knownCards = [];
+                this.flashcardData.unknownCards = [];
+                this.showFlashcard();
+            });
+        }
+
+        const repeatAllBtn = content.querySelector('#repeatAll');
+        if (repeatAllBtn) {
+            repeatAllBtn.addEventListener('click', () => {
+                this.startFlashcards();
+            });
+        }
+
+        const backBtn = content.querySelector('#backToDictFromResults');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => this.renderDictionary());
+        }
+    }
+
+
+
+
+
+
+
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
