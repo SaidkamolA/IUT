@@ -356,12 +356,13 @@
         </div>
 
         <!-- Модальное окно словаря -->
-        <div id="homeworkDictModal" class="modal fixed inset-0 z-50 hidden items-center justify-center p-4">
-            <div class="modal-content max-w-4xl w-full max-h-[90vh] overflow-y-auto slide-in">
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Словарь терминов</h3>
-                        <button id="closeHomeworkDict" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Закрыть">
+        <div id="homeworkDictModal" class="dict-modal fixed inset-0 z-50 hidden items-center justify-center p-2 sm:p-4">
+            <div class="dict-modal-content max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto slide-in">
+                <div class="p-4 sm:p-6">
+                    <!-- Заголовок -->
+                    <div class="flex items-center justify-between mb-4 sm:mb-5">
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Словарь терминов</h3>
+                        <button id="closeHomeworkDict" class="close-dict-btn p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Закрыть">
                             <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -369,8 +370,8 @@
                     </div>
                     
                     <!-- Переключатель категорий -->
-                    <div class="mb-6">
-                        <div class="flex items-center justify-center gap-3 mb-4">
+                    <div class="mb-4 sm:mb-6">
+                        <div class="category-switch-container flex items-center justify-center gap-2 sm:gap-3">
                             <button id="categoryAER" class="category-switch-btn active" data-category="AER">
                                 <span class="category-dot bg-blue-500"></span>
                                 <span class="category-name">AER</span>
@@ -385,61 +386,55 @@
                         </div>
                     </div>
                     
-                    <div class="mb-6 relative">
+                    <!-- Поиск -->
+                    <div class="mb-4 sm:mb-6 relative">
                         <div class="relative">
-                            <input type="text" id="dictSearchInput" placeholder="Поиск по словарю..." 
-                                   class="search-input w-full px-4 py-3 pl-11 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-gray-800 dark:bg-gray-900 border-gray-700 text-white placeholder-gray-400"
+                            <input type="text" id="dictSearchInput" placeholder="Поиск..." 
+                                   class="dict-search-input w-full px-3 sm:px-4 py-2.5 sm:py-3 pl-9 sm:pl-11 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-gray-800 dark:bg-gray-900 border border-gray-700 text-white placeholder-gray-400 text-sm sm:text-base"
                                    aria-label="Поиск по словарю">
-                            <svg class="absolute left-3.5 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="absolute left-2.5 sm:left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
                     </div>
                     
-                    <div id="homeworkDictContent" class="space-y-4">
+                    <!-- Контент словаря -->
+                    <div id="homeworkDictContent" class="dict-content space-y-3 sm:space-y-4">
                         <!-- Контент словаря будет добавлен динамически -->
                     </div>
                     
-                    <div class="mt-8">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                            <button id="startTestBtn" class="dev-btn test-btn group relative overflow-hidden">
+                    <!-- Кнопки действий -->
+                    <div class="mt-6 sm:mt-8">
+                        <div class="dict-actions-grid grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto">
+                            <button id="startTestBtn" class="dict-action-btn test-btn group relative overflow-hidden">
                                 <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                <div class="relative flex items-center justify-center space-x-3 p-6">
+                                <div class="relative flex items-center justify-center space-x-2 sm:space-x-3 p-4 sm:p-6">
                                     <div class="dev-icon">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                     </div>
                                     <div class="text-left">
-                                        <div class="font-semibold text-lg">Quiz Mode</div>
-                                        <div class="text-sm opacity-80">Test your knowledge</div>
+                                        <div class="font-semibold text-base sm:text-lg">Quiz Mode</div>
+                                        <div class="text-xs sm:text-sm opacity-80">Test your knowledge</div>
                                     </div>
                                 </div>
                             </button>
                             
-                            <button id="startFlashcardsBtn" class="dev-btn cards-btn group relative overflow-hidden">
+                            <button id="startFlashcardsBtn" class="dict-action-btn cards-btn group relative overflow-hidden">
                                 <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                <div class="relative flex items-center justify-center space-x-3 p-6">
+                                <div class="relative flex items-center justify-center space-x-2 sm:space-x-3 p-4 sm:p-6">
                                     <div class="dev-icon">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                         </svg>
                                     </div>
                                     <div class="text-left">
-                                        <div class="font-semibold text-lg">Flashcards</div>
-                                        <div class="text-sm opacity-80">Learn & memorize</div>
+                                        <div class="font-semibold text-base sm:text-lg">Flashcards</div>
+                                        <div class="text-xs sm:text-sm opacity-80">Learn & memorize</div>
                                     </div>
                                 </div>
                             </button>
-                        </div>
-                        
-                        <div class="mt-6 text-center">
-                            <div class="inline-flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                </svg>
-                                <span>Built for developers</span>
-                            </div>
                         </div>
                     </div>
                 </div>

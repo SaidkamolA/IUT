@@ -1935,20 +1935,20 @@ END:VCALENDAR`;
         categorySection.appendChild(categoryHeader);
 
         const termsContainer = document.createElement('div');
-        termsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+        termsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4';
 
         filteredTerms.forEach(([english, russian]) => {
             const termCard = document.createElement('div');
-            termCard.className = 'term-card p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200';
+            termCard.className = 'term-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200';
             
             termCard.innerHTML = `
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-1">${english}</h4>
-                        <p class="text-gray-600 dark:text-gray-400">${russian}</p>
+                <div class="flex items-start justify-between gap-2 sm:gap-3">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-1 break-words">${english}</h4>
+                        <p class="text-gray-600 dark:text-gray-400 break-words">${russian}</p>
                     </div>
-                    <div class="ml-3 flex-shrink-0">
-                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${this.getCategoryTagClass(category)}">
+                    <div class="ml-2 sm:ml-3 flex-shrink-0">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${this.getCategoryTagClass(category)} whitespace-nowrap">
                             ${category}
                         </span>
                     </div>
