@@ -87,18 +87,39 @@ function mergeLessonsWithGaps(lessons, gaps, showGaps = true) {
         return aTime.startMinutes - bTime.startMinutes;
     });
     
-    let gapIndex = 0;
+    // Sort gaps by start time
+    const sortedGaps = [...gaps].sort((a, b) => {
+        // Parse gap times
+        const aStartParts = a.start.split(':').map(Number);
+        const bStartParts = b.start.split(':').map(Number);
+        const aStartMinutes = aStartParts[0] * 60 + (aStartParts[1] || 0);
+        const bStartMinutes = bStartParts[0] * 60 + (bStartParts[1] || 0);
+        return aStartMinutes - bStartMinutes;
+    });
+    
+    const usedGaps = new Set();
     
     for (let i = 0; i < sortedLessons.length; i++) {
         result.push(sortedLessons[i]);
         
-        if (gapIndex < gaps.length) {
-            const current = parseTime(sortedLessons[i].time);
-            const gap = gaps[gapIndex];
+        // Find the gap that comes after this lesson
+        const current = parseTime(sortedLessons[i].time);
+        const lessonEndMinutes = current.endMinutes;
+        
+        // Look for a gap that starts when this lesson ends
+        for (let j = 0; j < sortedGaps.length; j++) {
+            if (usedGaps.has(j)) continue;
             
-            if (gap.start === current.end) {
+            const gap = sortedGaps[j];
+            // Parse gap start time to minutes
+            const gapStartParts = gap.start.split(':').map(Number);
+            const gapStartMinutes = gapStartParts[0] * 60 + (gapStartParts[1] || 0);
+            
+            // Compare using minutes for precise matching
+            if (gapStartMinutes === lessonEndMinutes) {
                 result.push(gap);
-                gapIndex++;
+                usedGaps.add(j);
+                break;
             }
         }
     }
@@ -1032,7 +1053,7 @@ class ScheduleApp {
     }
 
     updateMinGapMinutes(value) {
-        this.minGapMinutes = parseInt(value);
+        this.minGapMinutes = parseInt(value) || 10;
         localStorage.setItem('minGapMinutes', this.minGapMinutes);
         this.renderSchedule();
     }
@@ -1040,17 +1061,20 @@ class ScheduleApp {
     toggleGaps() {
         this.showGaps = !this.showGaps;
         localStorage.setItem('showGaps', this.showGaps);
+        this.updateSettingsUI();
         this.renderSchedule();
     }
 
     toggleGapsInCalendar() {
         this.includeGapsInCalendar = !this.includeGapsInCalendar;
         localStorage.setItem('includeGapsInCalendar', this.includeGapsInCalendar);
+        this.updateSettingsUI();
     }
 
     toggleCompactMode() {
         this.compactMode = !this.compactMode;
         localStorage.setItem('compactMode', this.compactMode);
+        this.updateSettingsUI();
         this.renderSchedule();
     }
 
@@ -1786,6 +1810,36 @@ END:VCALENDAR`;
         if (modal) {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            this.updateSettingsUI();
+        }
+    }
+    
+    updateSettingsUI() {
+        // Update gaps toggle button
+        const gapsToggle = document.getElementById('gapsToggle');
+        if (gapsToggle) {
+            gapsToggle.textContent = this.showGaps ? 'Выключить' : 'Включить';
+            gapsToggle.classList.toggle('active', this.showGaps);
+        }
+        
+        // Update calendar toggle button
+        const calendarToggle = document.getElementById('calendarToggle');
+        if (calendarToggle) {
+            calendarToggle.textContent = this.includeGapsInCalendar ? 'Выключить' : 'Включить';
+            calendarToggle.classList.toggle('active', this.includeGapsInCalendar);
+        }
+        
+        // Update compact mode toggle button
+        const compactToggle = document.getElementById('compactToggle');
+        if (compactToggle) {
+            compactToggle.textContent = this.compactMode ? 'Выключить' : 'Включить';
+            compactToggle.classList.toggle('active', this.compactMode);
+        }
+        
+        // Update min gap minutes input
+        const minGapMinutes = document.getElementById('minGapMinutes');
+        if (minGapMinutes) {
+            minGapMinutes.value = this.minGapMinutes;
         }
     }
 
